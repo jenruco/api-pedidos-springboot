@@ -19,14 +19,22 @@ public class JwtUtil {
 
     private static final Logger log = LoggerFactory.getLogger(JwtUtil.class);
 
-    @Value("${app.jwt.secret:mySecretKeyThatIsLongEnoughFor256BitHS256AlgorithmAndCanBeAnyRandomString}")
+    @Value("${app.jwt.secret}")
     private String jwtSecret;
 
-    @Value("${app.jwt.expiration:86400000}")  // 24 horas en milisegundos
+    @Value("${app.jwt.expiration}")
     private long jwtExpirationMs;
 
     /**
-     * Genera un JWT token para un usuario dado su email
+     * Genera un token JWT para un usuario.
+     * 
+     * @param email {@link String} email del usuario para el cual se genera el token
+     * @return {@link String} con el token JWT generado
+     * 
+     * @author Henry Pérez 
+     * @version 1.0
+     * @since 05-02-2026
+     * 
      */
     public String generateToken(String email) {
         Map<String, Object> claims = new HashMap<>();
@@ -34,7 +42,17 @@ public class JwtUtil {
     }
 
     /**
-     * Crea el token JWT firmado
+     * Crea el token JWT.
+     * 
+     * @param clailms {@link Map} con los claims (datos) a incluir en el token
+     * @param subject {@link String} subject del token (en este caso, el email del usuario)
+     * 
+     * @return {@link String} con el token JWT generado
+     * 
+     * @author Henry Pérez 
+     * @version 1.0
+     * @since 05-02-2026
+     * 
      */
     private String createToken(Map<String, Object> claims, String subject) {
         Date now = new Date();
@@ -52,27 +70,51 @@ public class JwtUtil {
     }
 
     /**
-     * Extrae el email (subject) del token
+     * Extrae el email (subject) del token JWT.
+     * 
+     * @param token {@link String} token JWT del cual se extrae el email
+     * @return {@link String} email extraído del token JWT
+     * 
+     * @author Henry Pérez 
+     * @version 1.0
+     * @since 05-02-2026
+     * 
      */
     public String extractEmail(String token) {
         return extractAllClaims(token).getSubject();
     }
 
     /**
-     * Valida si el token es válido (firma correcta y no expirado)
+     * Valida si el token JWT es válido (no expirado y con firma correcta).
+     * 
+     * @param token {@link String} token JWT del cual se extrae el email
+     * @return {@link boolean} true si el token es válido, false en caso contrario
+     * 
+     * @author Henry Pérez 
+     * @version 1.0
+     * @since 05-02-2026
+     * 
      */
     public boolean isTokenValid(String token) {
         try {
             extractAllClaims(token);
             return true;
         } catch (Exception e) {
-            log.warn("Token validation failed: {}", e.getMessage());
+            log.warn("Error al validar token: {}", e.getMessage());
             return false;
         }
     }
 
     /**
-     * Extrae todos los claims (datos) del token
+     * Extrae todos los claims/datos del token JWT.
+     * 
+     * @param token {@link String} token JWT del cual se extraen los claims
+     * @return {@link Claims} con los claims extraídos del token JWT
+     * 
+     * @author Henry Pérez 
+     * @version 1.0
+     * @since 05-02-2026
+     * 
      */
     private Claims extractAllClaims(String token) {
         SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes());

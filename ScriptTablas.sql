@@ -13,7 +13,6 @@ INSERT INTO roles (nombre) VALUES ('ADMIN'), ('USER'), ('CLIENTE');
 CREATE TABLE usuarios (
     id BIGSERIAL PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
-    login VARCHAR(50) NOT NULL,
     email VARCHAR(120) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     rol_id INT NOT NULL,

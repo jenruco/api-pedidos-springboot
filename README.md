@@ -5,14 +5,17 @@ Una aplicación backend moderna desarrollada con **Spring Boot** que proporciona
 ## 🎯 Características
 
 - ✅ **Autenticación y Autorización**: Implementación segura con JWT (JSON Web Tokens)
+- ✅ **Cifrado de Contraseñas**: BCrypt para encriptación segura de contraseñas
 - ✅ **Gestión de Usuarios**: Registro, login y manejo de perfiles de usuario
 - ✅ **Sistema de Roles**: Control de acceso basado en roles (RBAC)
 - ✅ **Gestión de Productos**: CRUD completo con categorías
+- ✅ **Carrito de Compras**: Gestión completa con relaciones JPA
 - ✅ **Gestión de Pedidos**: Creación y seguimiento de pedidos
 - ✅ **Validaciones Robustas**: Validaciones en DTOs con mensajes personalizados
 - ✅ **Manejo de Excepciones**: Controlador global de excepciones
 - ✅ **Base de Datos Relacional**: PostgreSQL con Hibernate/JPA
 - ✅ **Mapeo de Objetos**: ModelMapper para conversión entre entidades y DTOs
+- ✅ **Logging Detallado**: Trazabilidad de operaciones críticas
 
 ## 🛠️ Tecnologías Utilizadas
 
