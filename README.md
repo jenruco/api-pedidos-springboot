@@ -1,6 +1,6 @@
 # Aplicación de Gestión de Pedidos
 
-Una aplicación backend moderna desarrollada con **Spring Boot** que proporciona una API REST para la gestión integral de pedidos, usuarios, productos y roles. Incluye autenticación segura con JWT y validaciones robustas.
+Una aplicación backend moderna desarrollada con **Spring Boot** que proporciona una API REST para la gestión integral de pedidos, usuarios, productos y roles. Incluye autenticación segura con JWT, validaciones robustas y capacidades de despliegue contenerizado y orquestado mediante **Docker** y **Kubernetes**.
 
 ## 🎯 Características
 
@@ -16,6 +16,8 @@ Una aplicación backend moderna desarrollada con **Spring Boot** que proporciona
 - ✅ **Base de Datos Relacional**: PostgreSQL con Hibernate/JPA
 - ✅ **Mapeo de Objetos**: ModelMapper para conversión entre entidades y DTOs
 - ✅ **Logging Detallado**: Trazabilidad de operaciones críticas
+- ✅ **Dockerización**: Empaquetado de la aplicación en una imagen Docker reproducible
+- ✅ **Orquestación con Kubernetes**: Despliegue declarativo y escalable en un clúster K8s
 
 ## 🛠️ Tecnologías Utilizadas
 
@@ -39,10 +41,64 @@ Una aplicación backend moderna desarrollada con **Spring Boot** que proporciona
 - **Lombok**: Reducción de boilerplate
 - **Validation API**: Validación de datos
 
-### Herramientas
+### Infraestructura y Herramientas
 
-- **Maven**: Gestor de dependencias y construcción
+- **Maven**: Gestor de dependencias y construcción del artefacto JAR
 - **Devtools**: Recarga automática en desarrollo
+- **Docker / Docker Compose**: Construcción de imágenes, gestión de contenedores y definición de entorno local
+- **Kubernetes**: Orquestación de contenedores (Deployments, Services, ConfigMaps, Secrets)
+- **kubectl**: Cliente de línea de comandos para operar sobre el clúster
+
+## 🐳 Dockerización
+
+La aplicación se ha dockerizado siguiendo un enfoque de empaquetado inmutable:
+
+- **Imagen base**: Se parte de una imagen oficial de `eclipse-temurin`/`openjdk` adecuada para **Java 21**, sobre la cual se copia el JAR generado por Maven.
+- **Separación de build y runtime**: El proceso de compilación se realiza externamente (fase Maven), y la imagen Docker solo contiene el artefacto ya compilado y las dependencias necesarias para tiempo de ejecución.
+- **Configuración externalizada**: Las propiedades sensibles (credenciales de BD, secretos JWT, etc.) no se hornean en la imagen. Se inyectan mediante variables de entorno o ficheros de configuración montados en tiempo de despliegue.
+- **Optimización de capas**: El `Dockerfile` está estructurado para maximizar el caché de capas (dependencias primero, código de aplicación después), reduciendo tiempos de reconstrucción.
+
+Ejemplo de flujo mínimo local:
+
+```bash
+mvn clean package -DskipTests
+docker build -t pedidos-backend:latest .
+docker run --rm -p 8080:8080 --env-file .env pedidos-backend:latest
+```
+
+Opcionalmente, se puede utilizar **Docker Compose** para levantar la aplicación junto a PostgreSQL:
+
+```bash
+docker compose up -d
+```
+
+## ☸️ Despliegue en Kubernetes
+
+El proyecto está preparado para ejecutarse en un clúster Kubernetes siguiendo buenas prácticas de 12-factor app:
+
+- **Manifiestos declarativos**:
+  - `Deployment`: Define el número de réplicas, estrategia de actualización rolling y configuración de recursos (`requests`/`limits` de CPU y memoria).
+  - `Service`: Expone la aplicación dentro del clúster (ClusterIP / NodePort) y actúa como punto de entrada estable para el tráfico hacia los pods.
+  - `ConfigMap`: Inyección de configuración no sensible (por ejemplo, `SPRING_PROFILES_ACTIVE`, URLs de servicios externos).
+  - `Secret`: Almacenamiento cifrado a nivel de clúster de credenciales de base de datos, claves de firma JWT, etc.
+- **Health checks**:
+  - `livenessProbe` y `readinessProbe` configuradas sobre endpoints de salud de Spring Boot (por ejemplo `/actuator/health`), garantizando que solo los pods sanos reciban tráfico.
+- **Escalabilidad horizontal**:
+  - Soporte para `HorizontalPodAutoscaler (HPA)` basado en métricas de CPU/memoria, permitiendo escalar dinámicamente el número de réplicas según la carga.
+- **Observabilidad**:
+  - Integración con el stack de logging del clúster (por ejemplo, EFK/ELK) mediante logs estructurados en stdout/stderr.
+
+Flujo genérico de despliegue:
+
+```bash
+docker build -t <registry>/pedidos-backend:tag .
+docker push <registry>/pedidos-backend:tag
+
+kubectl apply -f k8s/deployment.yml
+kubectl apply -f k8s/service.yml
+kubectl apply -f k8s/configmap.yml
+kubectl apply -f k8s/secret.yml
+```
 
 ## 📋 Requisitos Previos
 
@@ -264,6 +320,7 @@ mvn test
 - Las propiedades JPA incluyen `spring.jpa.show-sql=true` para debugging
 - DDL automático configurado con `spring.jpa.hibernate.ddl-auto=update`
 - Todos los DTOs incluyen validaciones personalizadas
+ - El ciclo de vida de despliegue contempla build Maven, empaquetado Docker, publicación en registro de contenedores y orquestación en Kubernetes
 
 ## 🤝 Contribución
 
@@ -279,4 +336,4 @@ Proyecto desarrollado como parte del portafolio profesional.
 
 ---
 
-**Última actualización**: Febrero 2025
+**Última actualización**: Febrero 2026
