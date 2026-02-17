@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pedidos-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pedidos-api
+  template:
+    metadata:
+      labels:
+        app: pedidos-api
+    spec:
+      containers:
+        - name: pedidos-api
+          image: pedidos-api:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgres:5432/pedidos
+            - name: SPRING_DATASOURCE_USERNAME
+              value: postgres
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: postgres
+            - name: APP_CORS_ALLOWED_ORIGINS
+              value: http://app.pedidos.local

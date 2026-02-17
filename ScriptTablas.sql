@@ -111,10 +111,13 @@ CREATE TABLE orden_detalle (
         FOREIGN KEY (producto_id) REFERENCES productos(id)
 );
 
-alter table usuarios drop login;
+delete from usuarios;
 select * from usuarios;
+select * from roles;
 select * from categorias;
 select * from productos;
+select * from carrito;
+select * from carrito_items;
 
 insert into categorias (nombre, descripcion) values('Snacks', 'Tipos de Snacks');
 insert into categorias (nombre, descripcion) values('Bebidas', 'Tipos de bebidas');

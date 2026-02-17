@@ -9,6 +9,8 @@ import java.util.List;
 public interface UsuarioService {
 
     public List<UsuarioResDto> getUsuarios();
+    public UsuarioResDto getUsuarioById(Long id);
     public UsuarioResDto crearUsuario(UsuarioReqDto usuario);
+    public UsuarioResDto editarUsuario(Long id, UsuarioReqDto usuario);
     public LoginResDto login(LoginReqDto loginReq);
 }

@@ -11,10 +11,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +49,12 @@ public class ClienteController {
         return ResponseEntity.ok(usuarios);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<UsuarioResDto> getUsuarioById(@PathVariable Long id) {
+        UsuarioResDto usuarios = usuarioService.getUsuarioById(id);
+        return ResponseEntity.ok(usuarios);
+    }
+
     /**
      * Crea un nuevo usuario en el sistema.
      * 
@@ -61,6 +69,12 @@ public class ClienteController {
     @PostMapping
     public ResponseEntity<UsuarioResDto> postClientes(@Valid @RequestBody UsuarioReqDto usuarioReq) {
         UsuarioResDto nuevoUsuario = usuarioService.crearUsuario(usuarioReq);
+        return ResponseEntity.ok(nuevoUsuario);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UsuarioResDto> putClientes(@PathVariable Long id, @RequestBody UsuarioReqDto usuarioReq) {
+        UsuarioResDto nuevoUsuario = usuarioService.editarUsuario(id, usuarioReq);
         return ResponseEntity.ok(nuevoUsuario);
     }
 

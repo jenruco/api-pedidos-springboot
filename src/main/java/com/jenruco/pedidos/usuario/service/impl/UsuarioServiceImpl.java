@@ -51,6 +51,15 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .toList();
     }
 
+    @Override
+    public UsuarioResDto getUsuarioById(Long id) {
+        if(id == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El identificador del usuario es obligatorio");
+        }
+        Optional<Usuario> usuario = usuarioRepository.findById(id);
+        return modelMapper.map(usuario, UsuarioResDto.class);
+    }
+
     /**
      * Crea un nuevo usuario en el sistema.
      * 
@@ -69,6 +78,20 @@ public class UsuarioServiceImpl implements UsuarioService {
             nuevoUsuario.setPassword(passwordEncoder.encode(nuevoUsuario.getPassword()));
         }
         Usuario usuarioGuardado = usuarioRepository.save(nuevoUsuario);
+        return modelMapper.map(usuarioGuardado, UsuarioResDto.class);
+    }
+
+    @Override
+    public UsuarioResDto editarUsuario(Long id, UsuarioReqDto usuario) {
+        if(id == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El identificador del usuario es obligatorio");
+        }
+        Usuario usuariodb = usuarioRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No se encontró el usuario a editar"));
+
+        usuariodb.setNombre(usuario.getNombre());
+        usuariodb.setRolId(usuario.getRolId());
+        
+        Usuario usuarioGuardado = usuarioRepository.save(usuariodb);
         return modelMapper.map(usuarioGuardado, UsuarioResDto.class);
     }
 
